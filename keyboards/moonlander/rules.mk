@@ -29,3 +29,6 @@ EEPROM_DRIVER = i2c
 #project specific files
 SRC += matrix.c
 QUANTUM_LIB_SRC += i2c_master.c
+
+AUTO_SHIFT_ENABLE = yes
+TAP_DANCE_ENABLE = yes

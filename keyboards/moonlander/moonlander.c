@@ -23,10 +23,15 @@
 #    include "webusb.h"
 #endif
 
+#define LED_CAPS_LOCK_PIN B3
+
 keyboard_config_t keyboard_config;
 
 bool mcp23018_leds[3] = {0, 0, 0};
 bool is_launching     = false;
+
+bool g_suspend_state;
+rgb_config_t rgb_matrix_config;
 
 #ifdef DYNAMIC_MACRO_ENABLE
 static bool is_dynamic_recording = false;
