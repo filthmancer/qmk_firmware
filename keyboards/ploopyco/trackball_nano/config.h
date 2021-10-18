@@ -36,7 +36,7 @@
 
 /* disable action features */
 //#define NO_ACTION_LAYER
-//#define NO_ACTION_TAPPING
+//#define NO_ACTION_TAPPINGj
 //#define NO_ACTION_ONESHOT
 #define NO_ACTION_MACRO
 #define NO_ACTION_FUNCTION
@@ -45,3 +45,4 @@
    a polling rate as possible. */
 #define USB_POLLING_INTERVAL_MS 1
 #define USB_MAX_POWER_CONSUMPTION 100
+#define MOUSEKEY_WHEEL_MAX_SPEED 1

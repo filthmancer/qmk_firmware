@@ -36,15 +36,16 @@
 #    define OPT_SCALE 1  // Multiplier for wheel
 #endif
 
+//# Have tried fiddling around with these but it doesn't seem to do anything...
 #ifndef PLOOPY_DPI_OPTIONS
-#    define PLOOPY_DPI_OPTIONS { CPI375, CPI750, CPI1375 }
+#    define PLOOPY_DPI_OPTIONS { 1, 100, 200 }
 #    ifndef PLOOPY_DPI_DEFAULT
-#        define PLOOPY_DPI_DEFAULT 2
+#        define PLOOPY_DPI_DEFAULT 0
 #    endif
 #endif
 
 #ifndef PLOOPY_DPI_DEFAULT
-#    define PLOOPY_DPI_DEFAULT 2
+#    define PLOOPY_DPI_DEFAULT 0
 #endif
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = { };
@@ -71,14 +72,13 @@ uint16_t lastMidClick = 0;  // Stops scrollwheel from being read if it was press
 uint8_t OptLowPin = OPT_ENC1;
 bool debug_encoder = false;
 
-__attribute__((weak)) void process_mouse_user(report_mouse_t* mouse_report, int16_t x, int16_t y) {
+__attribute__((weak)) void process_mouse_user(report_mouse_t* mouse_report, float x, float y) {
     mouse_report->x = x;
     mouse_report->y = y;
 }
 
 __attribute__((weak)) void process_mouse(report_mouse_t* mouse_report) {
     report_adns_t data = adns_read_burst();
-
     if (data.dx != 0 || data.dy != 0) {
         if (debug_mouse)
             dprintf("Raw ] X: %d, Y: %d\n", data.dx, data.dy);
@@ -90,16 +90,17 @@ __attribute__((weak)) void process_mouse(report_mouse_t* mouse_report) {
         float xt = (float) data.dy * ADNS_X_TRANSFORM;
         float yt = (float) data.dx * ADNS_Y_TRANSFORM;
 
-        int16_t xti = (int16_t)xt;
-        int16_t yti = (int16_t)yt;
 
-        process_mouse_user(mouse_report, xti, yti);
+        //# Rewrote this to send floats to user side
+        // int16_t xti = (int16_t)xt;
+        // int16_t yti = (int16_t)yt;
+
+        process_mouse_user(mouse_report, xt, yt);
     }
 }
 
 bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
     xprintf("KL: kc: %u, col: %u, row: %u, pressed: %u\n", keycode, record->event.key.col, record->event.key.row, record->event.pressed);
-
     // Update Timer to prevent accidental scrolls
     if ((record->event.key.col == 1) && (record->event.key.row == 0)) {
         lastMidClick = timer_read();
@@ -138,7 +139,9 @@ bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
 
 // Hardware Setup
 void keyboard_pre_init_kb(void) {
-    // debug_enable = true;
+    debug_enable = true;
+    debug_keyboard = true;
+    debug_mouse = true;
     // debug_matrix = true;
     // debug_mouse = true;
     // debug_encoder = true;
@@ -181,6 +184,8 @@ void pointing_device_init(void) {
 
     // set the DPI.
     adns_set_cpi(dpi_array[keyboard_config.dpi_config]);
+
+    adns_set_cpi(1);
 }
 
 void pointing_device_task(void) {
